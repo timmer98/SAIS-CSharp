@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using TextIndexierung.Extensions;
 
 namespace TextIndexierung;
 
@@ -19,30 +20,37 @@ public class SuffixArrayBuilder
         InitializeSuffixArray(inputText, buckets, suffixMarks, suffixArray);
         var (reducedText, offsets) = CreateLmsNames(inputText, suffixArray, suffixMarks);
 
-        int[] recursionSuffixArray;
+        int[] sa1;
 
         if (new HashSet<byte>(reducedText).Count == reducedText.Length)
         {
             // Unique, dann counting sort
-            recursionSuffixArray = reducedText.OrderBy(a => a).Select(x => (int)x).ToArray();
+            sa1 = new int[reducedText.Length];
+
+            for (int i = 1; i < reducedText.Length; i++)
+            {
+                sa1[reducedText[i]] = i;
+            }
         }
         else
         {
-            recursionSuffixArray = BuildSuffixArray(reducedText);
-            // Hier irgendwie noch rueckmapping
+            // Fire a recursive call
+            sa1 = BuildSuffixArray(reducedText);
         }
 
-        PostitionLmsCharacters(inputText, suffixArray, recursionSuffixArray, suffixMarks, buckets, offsets);
+        suffixArray = InduceSuffixArrayFromSa1(inputText, suffixArray, sa1, suffixMarks, buckets, offsets);
 
         return suffixArray;
     }
 
-    private void PostitionLmsCharacters(byte[] inputText, int[] suffixArray, int[] summarySuffixArray, SuffixClass[] suffixMarks, Bucket[] buckets, int[] offsets)
+    private int[] InduceSuffixArrayFromSa1(byte[] inputText, int[] suffixArray, int[] summarySuffixArray,
+        SuffixClass[] suffixMarks, Bucket[] buckets, int[] offsets)
     {
-        ResetBucketsPointers(buckets);
-        suffixArray[0] = inputText.Length - 1;
+        buckets.ResetBucketsPointers();
+        suffixArray = Enumerable.Repeat(-1, suffixArray.Length).ToArray();
+        suffixArray[0] = suffixArray.Length - 1; // sentinel
 
-        for (int i = summarySuffixArray.Length - 1; i > 1; i--)
+        for (var i = summarySuffixArray.Length - 1; i > 0; i--)
         {
             var charIndex = offsets[summarySuffixArray[i]];
             var bucketIndex = inputText[charIndex];
@@ -52,8 +60,10 @@ public class SuffixArrayBuilder
             bucket.TailPointer--;
         }
 
-        ResetBucketsPointers(buckets);
+        buckets.ResetBucketsPointers();
         this.InduceLeftRight(inputText, suffixArray, buckets, suffixMarks);
+
+        return suffixArray;
     }
 
     private (byte[] reducedText, int[] offsets) CreateLmsNames(byte[] inputText, int[] suffixArray,
@@ -66,15 +76,14 @@ public class SuffixArrayBuilder
         var reducedTextSize = 1;
 
         for (var i = 1; i < suffixArray.Length; i++)
-            if (suffixMarks[i] == SuffixClass.LeftMostSmaller)
+            if (suffixArray[i] >= 0 && suffixMarks[suffixArray[i]] == SuffixClass.LeftMostSmaller)
             {
-                if (!AreLmsBlocksEqual(inputText, previous, suffixArray[i], suffixMarks)) counter++;
+                if (!AreLmsSubstringsEqual(inputText, previous, suffixArray[i], suffixMarks)) counter++;
 
                 previous = suffixArray[i];
                 lmsNames[suffixArray[i]] = counter;
                 reducedTextSize++;
             }
-
 
         var reducedText = new byte[reducedTextSize];
         var offsets = new int[reducedTextSize];
@@ -91,7 +100,7 @@ public class SuffixArrayBuilder
         return (reducedText, offsets);
     }
 
-    private bool AreLmsBlocksEqual(byte[] text, int previousOffset, int currentOffset, SuffixClass[] suffixMarks)
+    private bool AreLmsSubstringsEqual(byte[] text, int previousOffset, int currentOffset, SuffixClass[] suffixMarks)
     {
         if (previousOffset == text.Length || currentOffset == text.Length) return false;
         if (text[previousOffset] != text[currentOffset]) return false;
@@ -127,10 +136,11 @@ public class SuffixArrayBuilder
 
     private void InduceLeftRight(byte[] inputText, int[] suffixArray, Bucket[] buckets, SuffixClass[] suffixMarks)
     {
-        int countInsertions = 0;
+        var countInsertions = 0;
 
         // Scan from left to right for L suffixes
         for (var i = 0; i < inputText.Length; i++)
+        {
             // if T(SA[i] - 1) is L-Type)
             if (suffixArray[i] > 0 && suffixMarks[suffixArray[i] - 1] == SuffixClass.Larger)
             {
@@ -141,12 +151,15 @@ public class SuffixArrayBuilder
 
                 countInsertions++;
             }
+        }
 
         // Scan from right to left for S suffixes
-        ResetBucketsPointers(buckets);
+        buckets.ResetBucketsPointers();
 
-        for (var i = inputText.Length - 1; i > 1; i--)
+        for (var i = inputText.Length - 1; i > 0; i--)
         {
+            if (suffixArray[i] - 1 < 0) continue;
+
             // if T(SA[i] - 1) is S-Type
             var type = suffixMarks[suffixArray[i] - 1];
 
@@ -224,9 +237,9 @@ public class SuffixArrayBuilder
         var binSizesForChar = GetBinSizes(inputText);
 
         var buckets = new Bucket[byte.MaxValue];
+
         // TailPointer starts on the end, HeadPointer starts on the starting index
-        var previousBucket = new Bucket
-        { StartIndex = 0, EndIndex = binSizesForChar[0], TailPointer = binSizesForChar[0] - 1, HeadPointer = 0 };
+        var previousBucket = new Bucket(startIndex: 0, endIndex: binSizesForChar[0]);
         buckets[0] = previousBucket;
 
         for (var i = 1; i < binSizesForChar.Length; i++)
@@ -234,27 +247,12 @@ public class SuffixArrayBuilder
             var startIndex = previousBucket.EndIndex;
             var endIndex = binSizesForChar[i] + previousBucket.EndIndex;
 
-            var bucket = new Bucket
-            {
-                StartIndex = startIndex,
-                EndIndex = endIndex,
-                TailPointer = endIndex - 1,
-                HeadPointer = startIndex
-            };
+            var bucket = new Bucket(startIndex, endIndex);
 
             previousBucket = bucket;
             buckets[i] = bucket;
         }
 
         return buckets;
-    }
-
-    private void ResetBucketsPointers(Bucket[] buckets)
-    {
-        foreach (var bucket in buckets)
-        {
-            bucket.TailPointer = bucket.EndIndex - 1;
-            bucket.HeadPointer = bucket.StartIndex;
-        }
     }
 }

@@ -59,6 +59,34 @@ public class SuffixArrayBuilderTest
     }
 
     [TestMethod]
+    public void BuildSuffixArray_WithAnotherText_ShouldReturnCorrectSuffixArray()
+    {
+        // Arrange
+        var builder = new SuffixArrayBuilder();
+        var text = Encoding.ASCII.GetBytes("ABANANABANDANA$");
+        
+        // Act
+        var sa = builder.BuildSuffixArray(text);
+
+        // Assert
+        sa[0].Should().Be(14);
+        sa[1].Should().Be(13);
+        sa[2].Should().Be(0);
+        sa[3].Should().Be(6);
+        sa[4].Should().Be(11);
+        sa[5].Should().Be(4);
+        sa[6].Should().Be(2);
+        sa[7].Should().Be(8);
+        sa[8].Should().Be(1);
+        sa[9].Should().Be(7);
+        sa[10].Should().Be(10);
+        sa[11].Should().Be(12);
+        sa[12].Should().Be(5);
+        sa[13].Should().Be(3);
+        sa[14].Should().Be(9);
+    }
+
+    [TestMethod]
     public void MarkSuffixes_WithLectureText_ShouldMarkCorrectly()
     {
         var suffixArrayBuilder = new SuffixArrayBuilder();
