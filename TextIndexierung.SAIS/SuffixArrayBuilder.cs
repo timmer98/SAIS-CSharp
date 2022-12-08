@@ -16,7 +16,8 @@ namespace TextIndexierung.SAIS
 
         public int[] BuildSuffixArray(int[] inputText, int alphabetSize = 256)
         {
-            var suffixArray = Enumerable.Repeat(-1, inputText.Length).ToArray();
+            var suffixArray = new int[inputText.Length];
+            Array.Fill(suffixArray, -1);
             var buckets = this.GetBuckets(inputText, alphabetSize);
             var suffixMarks = this.MarkSuffixes(inputText);
 
@@ -25,7 +26,7 @@ namespace TextIndexierung.SAIS
             this.InduceLeft(inputText, suffixArray, buckets, suffixMarks);
             this.InduceRight(inputText, suffixArray, buckets, suffixMarks);
 
-            var (reducedText, offsets, newAlphabetSize) = this.BuildSummarySuffixArray(inputText, suffixArray, suffixMarks);
+            var (reducedText, offsets, newAlphabetSize) = this.BuildSummary(inputText, suffixArray, suffixMarks);
             int[] reducedSuffixArray = null;
 
             if (reducedText.Length == newAlphabetSize)
@@ -64,20 +65,20 @@ namespace TextIndexierung.SAIS
             }
         }
 
-        private (int[] reducedText, int[] offsets, int alphabetSize) BuildSummarySuffixArray(int[] inputText, int[] suffixArray, bool[] suffixMarks)
+        private (int[] reducedText, int[] offsets, int alphabetSize) BuildSummary(int[] inputText, int[] suffixArray, bool[] suffixMarks)
         {
             int[] lmsNames = Enumerable.Repeat(-1, suffixArray.Length).ToArray();
-            int counter = 0;
-            int reducedTextSize = 0;
             lmsNames[suffixArray[0]] = 0;
-            int current, previous = suffixArray[0];
+            int counter = 0;
+            int reducedTextSize = 1;
+            int previous = suffixArray[0];
 
             for (int i = 1; i < suffixArray.Length; i++)
             {
                 if (IsLmsSuffix(suffixMarks, suffixArray[i]))
                 {
                     reducedTextSize++;
-                    current = suffixArray[i];
+                    var current = suffixArray[i];
 
                     if (!this.AreLmsSubstringsEqual(inputText, previous, current, suffixMarks))
                     {
@@ -89,8 +90,8 @@ namespace TextIndexierung.SAIS
                 }
             }
 
-            int[] reducedText = new int[reducedTextSize + 1];
-            int[] offsets = new int[reducedTextSize + 1];
+            int[] reducedText = new int[reducedTextSize];
+            int[] offsets = new int[reducedTextSize];
 
             for (int i = 0, j = 0; i < lmsNames.Length; i++)
             {
@@ -114,8 +115,8 @@ namespace TextIndexierung.SAIS
             {
                 if (text[previousOffset + i] != text[currentOffset + i]) return false;
 
-                var prevIsLms = this.IsLmsSuffix(suffixMarks, previousOffset + 1);
-                var currentIsLms = this.IsLmsSuffix(suffixMarks, currentOffset + 1);
+                var prevIsLms = this.IsLmsSuffix(suffixMarks, previousOffset + i);
+                var currentIsLms = this.IsLmsSuffix(suffixMarks, currentOffset + i);
 
                 if (prevIsLms != currentIsLms) return false;
                 if (prevIsLms && currentIsLms) return true;
