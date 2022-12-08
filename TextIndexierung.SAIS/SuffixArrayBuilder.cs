@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,7 +53,7 @@ namespace TextIndexierung.SAIS
             return suffixArray;
         }
 
-        private void MapReducedSuffixArray(int[] inputText, int[] reducedSuffixArray, int[] suffixArray, Bucket[] buckets, bool[] suffixMarks, int[] offsets)
+        private void MapReducedSuffixArray(int[] inputText, int[] reducedSuffixArray, int[] suffixArray, Bucket[] buckets, BitArray suffixMarks, int[] offsets)
         {
             this.ResetBuckets(buckets);
 
@@ -65,7 +66,7 @@ namespace TextIndexierung.SAIS
             }
         }
 
-        private (int[] reducedText, int[] offsets, int alphabetSize) BuildSummary(int[] inputText, int[] suffixArray, bool[] suffixMarks)
+        private (int[] reducedText, int[] offsets, int alphabetSize) BuildSummary(int[] inputText, int[] suffixArray, BitArray suffixMarks)
         {
             int[] lmsNames = Enumerable.Repeat(-1, suffixArray.Length).ToArray();
             lmsNames[suffixArray[0]] = 0;
@@ -106,7 +107,7 @@ namespace TextIndexierung.SAIS
             return (reducedText, offsets, counter + 1);
         }
 
-        private bool AreLmsSubstringsEqual(int[] text, int previousOffset, int currentOffset, bool[] suffixMarks)
+        private bool AreLmsSubstringsEqual(int[] text, int previousOffset, int currentOffset, BitArray suffixMarks)
         {
             if (previousOffset == text.Length - 1 || currentOffset == text.Length - 1) return false;
             if (text[previousOffset] != text[currentOffset]) return false;
@@ -125,7 +126,7 @@ namespace TextIndexierung.SAIS
             return false;
         }
 
-        private bool IsLmsSuffix(bool[] suffixMarks, int index)
+        private bool IsLmsSuffix(BitArray suffixMarks, int index)
         {
             if (index == 0)
             {
@@ -140,7 +141,7 @@ namespace TextIndexierung.SAIS
             return false;
         }
 
-        private void InduceRight(int[] inputText, int[] suffixArray, Bucket[] buckets, bool[] suffixMarks)
+        private void InduceRight(int[] inputText, int[] suffixArray, Bucket[] buckets, BitArray suffixMarks)
         {
             for (int i = suffixArray.Length - 1; i >= 0; i--)
             {
@@ -154,7 +155,7 @@ namespace TextIndexierung.SAIS
             }
         }
 
-        private void InduceLeft(int[] inputText, int[] suffixArray, Bucket[] buckets, bool[] suffixMarks)
+        private void InduceLeft(int[] inputText, int[] suffixArray, Bucket[] buckets, BitArray suffixMarks)
         {
             for (int i = 0; i < suffixArray.Length; i++)
             {
@@ -169,7 +170,7 @@ namespace TextIndexierung.SAIS
             }
         }
 
-        private void InsertLmsCharacters(int[] inputText, int[] suffixArray, Bucket[] buckets, bool[] suffixMarks)
+        private void InsertLmsCharacters(int[] inputText, int[] suffixArray, Bucket[] buckets, BitArray suffixMarks)
         {
             // Start at 1 because first element can't be LMS by definition
             for (int i = 1; i < inputText.Length; i++)
@@ -184,9 +185,9 @@ namespace TextIndexierung.SAIS
             }
         }
 
-        internal bool[] MarkSuffixes(int[] inputText)
+        internal BitArray MarkSuffixes(int[] inputText)
         {
-            bool[] suffixTypes = new bool[inputText.Length];
+            var suffixTypes = new BitArray(inputText.Length);
             suffixTypes[inputText.Length - 1] = false; // Sentinel is always S-Type
 
             for (int i = inputText.Length - 2; i >= 0; i--)

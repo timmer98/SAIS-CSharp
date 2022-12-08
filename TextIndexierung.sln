@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextIndexierung", "TextIndexierung\TextIndexierung.csproj", "{CC6D9AA6-C8E1-4E60-A4B4-A0005B50E275}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextIndexierung.Test", "TextIndexierung.Test\TextIndexierung.Test.csproj", "{819F82A3-23AD-4597-A7B7-76C1E7EDFF89}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextIndexierung.Console", "TextIndexierung.Console\TextIndexierung.Console.csproj", "{91F1A043-ADBA-4B00-AB28-E5656849D411}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextIndexierung.SAIS", "TextIndexierung.SAIS\TextIndexierung.SAIS.csproj", "{B6A46F8E-D8E0-48A5-A2F9-51AA9B574298}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextIndexierung.SAIS", "TextIndexierung.SAIS\TextIndexierung.SAIS.csproj", "{B6A46F8E-D8E0-48A5-A2F9-51AA9B574298}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextIndexierung.Benchmarks", "TextIndexierung.Benchmarks\TextIndexierung.Benchmarks.csproj", "{801D3D8D-5046-4747-8E80-AB13D94717D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CC6D9AA6-C8E1-4E60-A4B4-A0005B50E275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC6D9AA6-C8E1-4E60-A4B4-A0005B50E275}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC6D9AA6-C8E1-4E60-A4B4-A0005B50E275}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC6D9AA6-C8E1-4E60-A4B4-A0005B50E275}.Release|Any CPU.Build.0 = Release|Any CPU
 		{819F82A3-23AD-4597-A7B7-76C1E7EDFF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{819F82A3-23AD-4597-A7B7-76C1E7EDFF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{819F82A3-23AD-4597-A7B7-76C1E7EDFF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{B6A46F8E-D8E0-48A5-A2F9-51AA9B574298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6A46F8E-D8E0-48A5-A2F9-51AA9B574298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6A46F8E-D8E0-48A5-A2F9-51AA9B574298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{801D3D8D-5046-4747-8E80-AB13D94717D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{801D3D8D-5046-4747-8E80-AB13D94717D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{801D3D8D-5046-4747-8E80-AB13D94717D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{801D3D8D-5046-4747-8E80-AB13D94717D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
