@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TextIndexierung.LongestCommonPrefix;
+using TextIndexierung.SAIS;
 
 namespace TextIndexierung.Test;
 

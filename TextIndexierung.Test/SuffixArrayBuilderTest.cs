@@ -1,7 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Text;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TextIndexierung.SAIS;
 
 namespace TextIndexierung.Test;
 
@@ -13,25 +19,53 @@ public class SuffixArrayBuilderTest
     public static byte[] EXAMPLE_STRING = Encoding.ASCII.GetBytes("immissiissippi$");
 
     [TestMethod]
-    public void BuildSuffixArray_WithLectureText_ShouldReturnCorrectArray()
+    public void BuildSuffixArray_WithLargeLoremIpsumFile_ShouldNotThrow()
     {
+        // Arrange
+        var text = File.ReadAllText(
+            "C:\\Users\\Lukas\\Documents\\Karriere\\Masterstudium\\1. Semester\\Text Indexierung\\Projekt\\TextIndexierung\\loremipsum.txt");
+        var textBytes = Encoding.ASCII.GetBytes(text);
+        textBytes = textBytes.Append((byte)0).ToArray();
+
         var suffixArrayBuilder = new SuffixArrayBuilder();
 
+        // Act
+        var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
+
+        // Assert
+        var checkResult = SuffixArrayChecker.Check(textBytes, suffixArray, textBytes.Length, true);
+        checkResult.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [TestMethod]
+    public void BuildSuffixArray_WithLoremIpsum_ShouldNotThrow()
+    {
+        // Arrange
+        var text = Constants.LOREM_IPSUM;
+        var suffixArrayBuilder = new SuffixArrayBuilder();
+        var textBytes = Encoding.ASCII.GetBytes(text);
+
+        // Act
+        var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
+
+        // Assert
+        var checkResult = SuffixArrayChecker.Check(textBytes, suffixArray, textBytes.Length, true);
+        checkResult.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [TestMethod]
+    public void BuildSuffixArray_WithLectureText_ShouldReturnCorrectArray()
+    {
+        // Arrange
+        var suffixArrayBuilder = new SuffixArrayBuilder();
+
+        // Act
         var suffixArray = suffixArrayBuilder.BuildSuffixArray(LECTURE_TEST_STRING);
 
-        suffixArray[0].Should().Be(12);
-        suffixArray[1].Should().Be(11);
-        suffixArray[2].Should().Be(0);
-        suffixArray[3].Should().Be(8);
-        suffixArray[4].Should().Be(5);
-        suffixArray[5].Should().Be(2);
-        suffixArray[6].Should().Be(10);
-        suffixArray[7].Should().Be(1);
-        suffixArray[8].Should().Be(9);
-        suffixArray[9].Should().Be(6);
-        suffixArray[10].Should().Be(3);
-        suffixArray[11].Should().Be(7);
-        suffixArray[12].Should().Be(4);
+        // Assert
+        suffixArray.Should().Equal(12, 11, 0, 8, 5, 2, 10, 1, 9, 6, 3, 7, 4);
+        var checkResult = SuffixArrayChecker.Check(LECTURE_TEST_STRING, suffixArray, LECTURE_TEST_STRING.Length, true);
+        checkResult.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [TestMethod]
@@ -41,21 +75,7 @@ public class SuffixArrayBuilderTest
 
         var suffixArray = suffixArrayBuilder.BuildSuffixArray(EXAMPLE_STRING);
 
-        suffixArray[0].Should().Be(14);
-        suffixArray[1].Should().Be(13);
-        suffixArray[2].Should().Be(6);
-        suffixArray[3].Should().Be(0);
-        suffixArray[4].Should().Be(10);
-        suffixArray[5].Should().Be(3);
-        suffixArray[6].Should().Be(7);
-        suffixArray[7].Should().Be(2);
-        suffixArray[8].Should().Be(1);
-        suffixArray[9].Should().Be(12);
-        suffixArray[10].Should().Be(11);
-        suffixArray[11].Should().Be(5);
-        suffixArray[12].Should().Be(9);
-        suffixArray[13].Should().Be(4);
-        suffixArray[14].Should().Be(8);
+        suffixArray.Should().Equal(14, 13, 6, 0, 10, 3, 7, 2, 1, 12, 11, 5, 9, 4, 8);
     }
 
     [TestMethod]
@@ -64,54 +84,40 @@ public class SuffixArrayBuilderTest
         // Arrange
         var builder = new SuffixArrayBuilder();
         var text = Encoding.ASCII.GetBytes("ABANANABANDANA$");
-        
+
         // Act
         var sa = builder.BuildSuffixArray(text);
 
         // Assert
-        sa[0].Should().Be(14);
-        sa[1].Should().Be(13);
-        sa[2].Should().Be(0);
-        sa[3].Should().Be(6);
-        sa[4].Should().Be(11);
-        sa[5].Should().Be(4);
-        sa[6].Should().Be(2);
-        sa[7].Should().Be(8);
-        sa[8].Should().Be(1);
-        sa[9].Should().Be(7);
-        sa[10].Should().Be(10);
-        sa[11].Should().Be(12);
-        sa[12].Should().Be(5);
-        sa[13].Should().Be(3);
-        sa[14].Should().Be(9);
+        sa.Should().Equal(14, 13, 0, 6, 11, 4, 2, 8, 1, 7, 10, 12, 5, 3, 9);
     }
 
     [TestMethod]
     public void MarkSuffixes_WithLectureText_ShouldMarkCorrectly()
     {
         var suffixArrayBuilder = new SuffixArrayBuilder();
-        var marks = suffixArrayBuilder.MarkSuffixes(LECTURE_TEST_STRING);
+        var marks = suffixArrayBuilder.MarkSuffixes(LECTURE_TEST_STRING.Select(x => (int)x).ToArray());
 
-        marks[0].Should().Be(SuffixClass.Smaller);
-        marks[1].Should().Be(SuffixClass.Larger);
-        marks[2].Should().Be(SuffixClass.LeftMostSmaller);
-        marks[3].Should().Be(SuffixClass.Smaller);
-        marks[4].Should().Be(SuffixClass.Larger);
-        marks[5].Should().Be(SuffixClass.LeftMostSmaller);
-        marks[6].Should().Be(SuffixClass.Smaller);
-        marks[7].Should().Be(SuffixClass.Larger);
-        marks[8].Should().Be(SuffixClass.LeftMostSmaller);
-        marks[9].Should().Be(SuffixClass.Larger);
-        marks[10].Should().Be(SuffixClass.Larger);
-        marks[11].Should().Be(SuffixClass.Larger);
-        marks[12].Should().Be(SuffixClass.LeftMostSmaller);
+        marks[0].Should().Be(false);
+        marks[1].Should().Be(true);
+        marks[2].Should().Be(false);
+        marks[3].Should().Be(false);
+        marks[4].Should().Be(true);
+        marks[5].Should().Be(false);
+        marks[6].Should().Be(false);
+        marks[7].Should().Be(true);
+        marks[8].Should().Be(false);
+        marks[9].Should().Be(true);
+        marks[10].Should().Be(true);
+        marks[11].Should().Be(true);
+        marks[12].Should().Be(false);
     }
 
     [TestMethod]
     public void GetBuckets_WithLectureText_ShouldReturnCorrectBuckets()
     {
         var suffixArrayBuilder = new SuffixArrayBuilder();
-        var buckets = suffixArrayBuilder.GetBuckets(LECTURE_TEST_STRING);
+        var buckets = suffixArrayBuilder.GetBuckets(LECTURE_TEST_STRING.Select(x => (int) x).ToArray());
 
         var dollarBucket = buckets[36]; // Buckets indexed by ASCII value
         var aBucket = buckets[97];

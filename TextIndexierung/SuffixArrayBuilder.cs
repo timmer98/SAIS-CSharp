@@ -1,33 +1,50 @@
 ﻿using System.Xml;
 using TextIndexierung.Extensions;
+using TextIndexierung.Models;
 
-namespace TextIndexierung;
+namespace TextIndexierung.Old;
 
 public class SuffixArrayBuilder
 {
-    public int[] BuildSuffixArray(byte[] inputText)
+    public int[] BuildSuffixArray(byte[] inputBytes)
     {
-        var buckets = GetBuckets(inputText);
+        var inputText = inputBytes.Select(x => (int)x).ToArray();
+        return BuildSuffixArray(inputText);
+    }
+
+    private int[] BuildSuffixArray(int[] inputText, int alphabetSize = 256)
+    {
+        var buckets = GetBuckets(inputText, alphabetSize);
         var suffixMarks = MarkSuffixes(inputText);
 
         return Induce(inputText, buckets, suffixMarks);
     }
 
-    private int[] Induce(byte[] inputText, Bucket[] buckets, SuffixClass[] suffixMarks)
+    private int[] Induce(int[] inputText, Bucket[] buckets, SuffixClass[] suffixMarks)
     {
         var suffixArray = Enumerable.Repeat(-1, inputText.Length).ToArray();
+        PlaceLmsSuffixes(inputText, buckets, suffixMarks, suffixArray);
+        InduceLType(inputText, suffixArray, buckets, suffixMarks);
+        InduceSType(inputText, suffixArray, buckets, suffixMarks);
+        var (reducedText, offsets, alphabetSize) = CreateLmsNames(inputText, suffixArray, suffixMarks);
 
-        InitializeSuffixArray(inputText, buckets, suffixMarks, suffixArray);
-        var (reducedText, offsets) = CreateLmsNames(inputText, suffixArray, suffixMarks);
+        int[] sa1 = BuildSa1(reducedText, alphabetSize);
 
+        suffixArray = InduceSuffixArrayFromSa1(inputText, suffixArray, sa1, suffixMarks, buckets, offsets);
+
+        return suffixArray;
+    }
+
+    private int[] BuildSa1(int[] reducedText, int alphabetSize)
+    {
         int[] sa1;
 
-        if (new HashSet<byte>(reducedText).Count == reducedText.Length)
+        if (alphabetSize == reducedText.Length)
         {
             // Unique, dann counting sort
             sa1 = new int[reducedText.Length];
 
-            for (int i = 1; i < reducedText.Length; i++)
+            for (int i = 0; i < reducedText.Length; i++)
             {
                 sa1[reducedText[i]] = i;
             }
@@ -35,38 +52,36 @@ public class SuffixArrayBuilder
         else
         {
             // Fire a recursive call
-            sa1 = BuildSuffixArray(reducedText);
+            sa1 = BuildSuffixArray(reducedText, alphabetSize);
         }
 
-        suffixArray = InduceSuffixArrayFromSa1(inputText, suffixArray, sa1, suffixMarks, buckets, offsets);
-
-        return suffixArray;
+        return sa1;
     }
 
-    private int[] InduceSuffixArrayFromSa1(byte[] inputText, int[] suffixArray, int[] summarySuffixArray,
+    private int[] InduceSuffixArrayFromSa1(int[] inputText, int[] suffixArray, int[] summarySuffixArray,
         SuffixClass[] suffixMarks, Bucket[] buckets, int[] offsets)
     {
         buckets.ResetBucketsPointers();
         suffixArray = Enumerable.Repeat(-1, suffixArray.Length).ToArray();
-        suffixArray[0] = suffixArray.Length - 1; // sentinel
 
-        for (var i = summarySuffixArray.Length - 1; i > 0; i--)
+        for (var i = summarySuffixArray.Length - 1; i >= 0; i--)
         {
             var charIndex = offsets[summarySuffixArray[i]];
             var bucketIndex = inputText[charIndex];
             var bucket = buckets[bucketIndex];
-
+            
             suffixArray[bucket.TailPointer] = charIndex;
             bucket.TailPointer--;
         }
 
         buckets.ResetBucketsPointers();
-        this.InduceLeftRight(inputText, suffixArray, buckets, suffixMarks);
+        InduceLType(inputText, suffixArray, buckets, suffixMarks);
+        InduceSType(inputText, suffixArray, buckets, suffixMarks);
 
         return suffixArray;
     }
 
-    private (byte[] reducedText, int[] offsets) CreateLmsNames(byte[] inputText, int[] suffixArray,
+    private (int[] reducedText, int[] offsets, int alphabetSize) CreateLmsNames(int[] inputText, int[] suffixArray,
         SuffixClass[] suffixMarks)
     {
         var lmsNames = Enumerable.Repeat(-1, suffixArray.Length).ToArray();
@@ -75,7 +90,7 @@ public class SuffixArrayBuilder
         var previous = suffixArray[0];
         var reducedTextSize = 1;
 
-        for (var i = 1; i < suffixArray.Length; i++)
+        for (var i = 0; i < suffixArray.Length; i++)
             if (suffixArray[i] >= 0 && suffixMarks[suffixArray[i]] == SuffixClass.LeftMostSmaller)
             {
                 if (!AreLmsSubstringsEqual(inputText, previous, suffixArray[i], suffixMarks)) counter++;
@@ -85,7 +100,7 @@ public class SuffixArrayBuilder
                 reducedTextSize++;
             }
 
-        var reducedText = new byte[reducedTextSize];
+        var reducedText = new int[reducedTextSize];
         var offsets = new int[reducedTextSize];
         var reducedTextIndex = 0;
 
@@ -97,12 +112,12 @@ public class SuffixArrayBuilder
                 reducedTextIndex++;
             }
 
-        return (reducedText, offsets);
+        return (reducedText, offsets, counter + 1);
     }
 
-    private bool AreLmsSubstringsEqual(byte[] text, int previousOffset, int currentOffset, SuffixClass[] suffixMarks)
+    private bool AreLmsSubstringsEqual(int[] text, int previousOffset, int currentOffset, SuffixClass[] suffixMarks)
     {
-        if (previousOffset == text.Length || currentOffset == text.Length) return false;
+        if (previousOffset == text.Length - 1 || currentOffset == text.Length - 1) return false;
         if (text[previousOffset] != text[currentOffset]) return false;
 
         for (var i = 1; i < text.Length; i++)
@@ -119,7 +134,7 @@ public class SuffixArrayBuilder
         return false;
     }
 
-    private void InitializeSuffixArray(byte[] inputText, Bucket[] buckets, SuffixClass[] suffixMarks, int[] suffixArray)
+    private void PlaceLmsSuffixes(int[] inputText, Bucket[] buckets, SuffixClass[] suffixMarks, int[] suffixArray)
     {
         // Scan from left to right and insert S* suffixes at the end of its bucket
         for (var i = 0; i < inputText.Length; i++)
@@ -131,13 +146,10 @@ public class SuffixArrayBuilder
                 bucket.TailPointer--;
             }
 
-        InduceLeftRight(inputText, suffixArray, buckets, suffixMarks);
     }
 
-    private void InduceLeftRight(byte[] inputText, int[] suffixArray, Bucket[] buckets, SuffixClass[] suffixMarks)
+    private void InduceLType(int[] inputText, int[] suffixArray, Bucket[] buckets, SuffixClass[] suffixMarks)
     {
-        var countInsertions = 0;
-
         // Scan from left to right for L suffixes
         for (var i = 0; i < inputText.Length; i++)
         {
@@ -148,15 +160,16 @@ public class SuffixArrayBuilder
                 var bucket = buckets[character];
                 suffixArray[bucket.HeadPointer] = suffixArray[i] - 1;
                 bucket.HeadPointer++;
-
-                countInsertions++;
             }
         }
+    }
 
+    private void InduceSType(int[] inputText, int[] suffixArray, Bucket[] buckets, SuffixClass[] suffixMarks) 
+    {
         // Scan from right to left for S suffixes
         buckets.ResetBucketsPointers();
 
-        for (var i = inputText.Length - 1; i > 0; i--)
+        for (var i = inputText.Length - 1; i >= 0; i--)
         {
             if (suffixArray[i] - 1 < 0) continue;
 
@@ -169,15 +182,11 @@ public class SuffixArrayBuilder
                 var bucket = buckets[character];
                 suffixArray[bucket.TailPointer] = suffixArray[i] - 1;
                 bucket.TailPointer--;
-
-                countInsertions++;
-
-                if (countInsertions == inputText.Length - 1) break;
             }
         }
     }
 
-    internal SuffixClass[] MarkSuffixes(byte[] inputText)
+    internal SuffixClass[] MarkSuffixes(int[] inputText)
     {
         var suffixClasses = new SuffixClass[inputText.Length];
         var n = inputText.Length; // Rename length to have naming from definition
@@ -216,10 +225,11 @@ public class SuffixArrayBuilder
     ///     Get bin sizes for each character.
     /// </summary>
     /// <param name="inputText"></param>
+    /// <param name="alphabetSize"></param>
     /// <returns>Dictionary where each character is mapped to its frequency.</returns>
-    private int[] GetBinSizes(byte[] inputText)
+    private int[] GetBinSizes(int[] inputText, int alphabetSize = 256)
     {
-        var binSizesForChar = new int[byte.MaxValue];
+        var binSizesForChar = new int[alphabetSize];
 
         for (var index = 0; index < inputText.Length; index++)
         {
@@ -231,12 +241,14 @@ public class SuffixArrayBuilder
         return binSizesForChar;
     }
 
-    // This should have O(1) because we iterate max byte.MaxValue times.
-    internal Bucket[] GetBuckets(byte[] inputText)
-    {
-        var binSizesForChar = GetBinSizes(inputText);
 
-        var buckets = new Bucket[byte.MaxValue];
+
+    // This should have O(1) because we iterate max byte.MaxValue times.
+    internal Bucket[] GetBuckets(int[] inputText, int alphabetSize = 256)
+    {
+        var binSizesForChar = GetBinSizes(inputText, alphabetSize);
+
+        var buckets = new Bucket[alphabetSize];
 
         // TailPointer starts on the end, HeadPointer starts on the starting index
         var previousBucket = new Bucket(startIndex: 0, endIndex: binSizesForChar[0]);

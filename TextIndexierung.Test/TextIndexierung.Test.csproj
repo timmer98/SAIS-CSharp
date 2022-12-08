@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TextIndexierung.SAIS\TextIndexierung.SAIS.csproj" />
     <ProjectReference Include="..\TextIndexierung\TextIndexierung.csproj" />
   </ItemGroup>
 
