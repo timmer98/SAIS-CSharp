@@ -22,6 +22,6 @@ internal class Program
 
         var checkResult = sais.SuffixArrayChecker.Check(textBytes, suffixArray, textBytes.Length, true);
 
-        System.Console.WriteLine($"RESULT name=Lukas-Timmer sa_construction_time={stopwatch.ElapsedMilliseconds} ms");
+        System.Console.WriteLine($"RESULT name=\"Name\" sa_construction_time={stopwatch.ElapsedMilliseconds} ms");
     }
 }

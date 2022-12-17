@@ -21,9 +21,9 @@ public class SuffixArrayBuilderTest
     [TestMethod]
     public void BuildSuffixArray_WithLargeLoremIpsumFile_ShouldNotThrow()
     {
+        
         // Arrange
-        var text = File.ReadAllText(
-            "C:\\Users\\Lukas\\Documents\\Karriere\\Masterstudium\\1. Semester\\Text Indexierung\\Projekt\\TextIndexierung\\loremipsum.txt");
+        var text = File.ReadAllText("..\\..\\..\\..\\..\\loremipsum.txt");
         var textBytes = Encoding.ASCII.GetBytes(text);
         textBytes = textBytes.Append((byte)0).ToArray();
 

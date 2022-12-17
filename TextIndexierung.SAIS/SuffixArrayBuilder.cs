@@ -28,7 +28,7 @@ namespace TextIndexierung.SAIS
             this.InduceRight(inputText, suffixArray, buckets, suffixMarks);
 
             var (reducedText, offsets, newAlphabetSize) = this.BuildSummary(inputText, suffixArray, suffixMarks);
-            int[] reducedSuffixArray = null;
+            int[] reducedSuffixArray;
 
             if (reducedText.Length == newAlphabetSize)
             {
