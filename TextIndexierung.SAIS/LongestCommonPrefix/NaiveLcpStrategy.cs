@@ -1,6 +1,6 @@
 ﻿namespace TextIndexierung.SAIS.LongestCommonPrefix;
 
-internal class NaiveLcpStrategy : ILcpStrategy
+public class NaiveLcpStrategy : ILcpStrategy
 {
     public int[] ComputeLcpArrayParallel(byte[] inputText, int[] suffixArray)
     {

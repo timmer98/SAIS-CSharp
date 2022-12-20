@@ -1,6 +1,6 @@
 ﻿namespace TextIndexierung.SAIS.LongestCommonPrefix;
 
-internal class KasaiLinearTimeLcpStrategy : ILcpStrategy
+public class KasaiLinearTimeLcpStrategy : ILcpStrategy
 {
     public int[] ComputeLcpArrayParallel(byte[] inputText, int[] suffixArray)
     {
