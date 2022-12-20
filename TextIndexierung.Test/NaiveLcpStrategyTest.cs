@@ -30,7 +30,7 @@ namespace TextIndexierung.Test
         public void NaiveLcpStrategy_WithLargerFile_ShouldJustNotThrow()
         {
             // Arrange
-            var text = File.ReadAllText("..\\..\\..\\..\\..\\loremipsum.txt");
+            var text = File.ReadAllText("..\\..\\..\\..\\..\\loremipsumsmall.txt");
             var textBytes = Encoding.ASCII.GetBytes(text);
             textBytes = textBytes.Append((byte)0).ToArray();
             var suffixArrayBuilder = new SuffixArrayBuilder();
@@ -38,7 +38,7 @@ namespace TextIndexierung.Test
             var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
 
             // Act
-            var lcp = lcpStrategy.ComputeLcpArray(textBytes, suffixArray);
+            var lcp = lcpStrategy.ComputeLcpArrayParallel(textBytes, suffixArray);
         }
     }
 }

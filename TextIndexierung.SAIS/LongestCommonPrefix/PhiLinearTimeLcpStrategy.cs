@@ -42,19 +42,19 @@
             {
                 int j = phiArray[i];
 
-                while (inputText[i + l] == inputText[j + l])
+                while (i + l < inputText.Length && j + l < inputText.Length && inputText[i + l] == inputText[j + l])
                 {
-                    l = l + 1;
+                    l++;
                 }
 
                 phiArray[i] = l;
                 l = Math.Max(0, l - 1);
             }
 
-            Parallel.For(0, suffixArray.Length, (i) =>
+            for (int i = 0; i < phiArray.Length; i++)
             {
                 lcpArray[i] = phiArray[suffixArray[i]];
-            });
+            }
 
             return lcpArray;
         }
@@ -63,6 +63,8 @@
         {
             int[] phiArray = new int[suffixArray.Length];
 
+            phiArray[^1] = suffixArray[^1];
+
             for (int i = 1; i < suffixArray.Length; i++)
             {
                 phiArray[suffixArray[i]] = suffixArray[i - 1];
@@ -70,19 +72,5 @@
 
             return phiArray;
         }
-
-        private int[] ComputeParallelPhiArray(int[] suffixArray)
-        {
-            int[] phiArray = new int[suffixArray.Length];
-
-            Parallel.For(1, suffixArray.Length, (i) =>
-            {
-                phiArray[suffixArray[i]] = suffixArray[i - 1];
-
-            });
-
-            return phiArray;
-        }
-
     }
 }
