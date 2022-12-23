@@ -1,7 +1,13 @@
 ﻿namespace TextIndexierung.SAIS.LongestCommonPrefix;
 
+/// <summary>
+/// Naive lcp construction in O(n^2) time.
+/// </summary>
 public class NaiveLcpStrategy : ILcpStrategy
 {
+    /// <summary>
+    /// Naive lcp construction naively parallelized.
+    /// </summary>
     public int[] ComputeLcpArrayParallel(byte[] inputText, int[] suffixArray)
     {
         var lcpArray = new int[inputText.Length];
@@ -12,6 +18,9 @@ public class NaiveLcpStrategy : ILcpStrategy
         return lcpArray;
     }
     
+    /// <summary>
+    /// Standard sequential naive lcp construction.
+    /// </summary>
     public int[] ComputeLcpArray(Span<byte> inputText, int[] suffixArray)
     {
         var lcpArray = new int[inputText.Length];

@@ -1,5 +1,8 @@
 ﻿namespace TextIndexierung.SAIS.LongestCommonPrefix;
 
+/// <summary>
+/// Implementation of the Kasai linear time longest common prefix array construction algorithm.
+/// </summary>
 public class KasaiLinearTimeLcpStrategy : ILcpStrategy
 {
     public int[] ComputeLcpArrayParallel(byte[] inputText, int[] suffixArray)

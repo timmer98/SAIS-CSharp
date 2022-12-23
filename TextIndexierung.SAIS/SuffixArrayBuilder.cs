@@ -6,6 +6,11 @@ namespace TextIndexierung.SAIS
     {
         private MemoryManager memoryManager;
 
+        public SuffixArrayBuilder()
+        {
+            this.memoryManager = new MemoryManager();
+        }
+
         public SuffixArrayBuilder(MemoryManager memoryManager)
         {
             this.memoryManager = memoryManager;

@@ -13,7 +13,7 @@ namespace TextIndexierung.Benchmarks
             var inputText = textBytes;
             var suffixArrayBuilder = new SuffixArrayBuilder();
             var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
-
+            
             return (inputText, suffixArray);
         }
     }
