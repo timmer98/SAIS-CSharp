@@ -8,6 +8,7 @@ using System.Text;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TextIndexierung.SAIS;
+using TextIndexierung.SAIS.Model;
 
 namespace TextIndexierung.Test;
 
@@ -96,7 +97,8 @@ public class SuffixArrayBuilderTest
     public void MarkSuffixes_WithLectureText_ShouldMarkCorrectly()
     {
         var suffixArrayBuilder = new SuffixArrayBuilder();
-        var marks = suffixArrayBuilder.MarkSuffixes(LECTURE_TEST_STRING.Select(x => (int)x).ToArray());
+        var input = new ByteArray(LECTURE_TEST_STRING);
+        var marks = suffixArrayBuilder.MarkSuffixes(input);
 
         marks[0].Should().Be(false);
         marks[1].Should().Be(true);
@@ -117,7 +119,8 @@ public class SuffixArrayBuilderTest
     public void GetBuckets_WithLectureText_ShouldReturnCorrectBuckets()
     {
         var suffixArrayBuilder = new SuffixArrayBuilder();
-        var buckets = suffixArrayBuilder.GetBuckets(LECTURE_TEST_STRING.Select(x => (int) x).ToArray());
+        var input = new ByteArray(LECTURE_TEST_STRING);
+        var buckets = suffixArrayBuilder.GetBuckets(input);
 
         var dollarBucket = buckets[36]; // Buckets indexed by ASCII value
         var aBucket = buckets[97];
