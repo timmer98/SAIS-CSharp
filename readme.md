@@ -16,3 +16,8 @@ lcp_naive_construction_time=14998
 lcp_kasai_construction_time=2480 
 lcp_phi_construction_time=1720
 ```
+
+English 100MB Text:
+libsais: 14s
+this implementation: 36,6s
+my c implementation: 42s
