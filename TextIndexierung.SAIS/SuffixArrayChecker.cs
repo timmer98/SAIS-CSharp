@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace TextIndexierung.SAIS
 {
     /// <summary>
-    /// Suffix array checker by Yuta Mori.
+    /// Suffix array checker by Yuta Mori. Just used to check correctness of algorithms.
     /// 
     /// https://sites.google.com/site/yuta256/sais
     /// </summary>
     public class SuffixArrayChecker
     {
-        public static int Check(byte[] T, Span<int> SA, int n, bool verbose)
+        public static int Check(byte[] T, ArraySegment<int> SA, int n, bool verbose)
         {
             var C = new int[256];
             int i, p, q, t;

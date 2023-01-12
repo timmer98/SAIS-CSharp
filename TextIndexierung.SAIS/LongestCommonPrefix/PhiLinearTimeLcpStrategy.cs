@@ -5,14 +5,14 @@
     /// </summary>
     public class PhiLinearTimeLcpStrategy : ILcpStrategy
     {
-        public int[] ComputeLcpArray(Span<byte> inputText, Span<int> suffixArray)
+        public int[] ComputeLcpArray(Span<byte> inputText, ArraySegment<int> suffixArray)
         {
-            var lcpArray = new int[suffixArray.Length];
+            var lcpArray = new int[suffixArray.Count];
             var phiArray = ComputePhiArray(suffixArray);
 
             int l = 0;
 
-            for (int i = 0; i < suffixArray.Length; i++)
+            for (int i = 0; i < suffixArray.Count; i++)
             {
                 int j = phiArray[i];
 
@@ -33,13 +33,13 @@
             return lcpArray;
         }
 
-        private int[] ComputePhiArray(Span<int> suffixArray)
+        private int[] ComputePhiArray(ArraySegment<int> suffixArray)
         {
-            int[] phiArray = new int[suffixArray.Length];
+            int[] phiArray = new int[suffixArray.Count];
 
             phiArray[^1] = suffixArray[^1];
 
-            for (int i = 1; i < suffixArray.Length; i++)
+            for (int i = 1; i < suffixArray.Count; i++)
             {
                 phiArray[suffixArray[i]] = suffixArray[i - 1];
             }

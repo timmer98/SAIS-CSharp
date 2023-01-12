@@ -8,7 +8,7 @@ public class NaiveLcpStrategy : ILcpStrategy
     /// <summary>
     /// Naive lcp construction naively parallelized.
     /// </summary>
-    public int[] ComputeLcpArrayParallel(byte[] inputText, int[] suffixArray)
+    public int[] ComputeLcpArrayParallel(byte[] inputText, ArraySegment<int> suffixArray)
     {
         var lcpArray = new int[inputText.Length];
         lcpArray[0] = 0;
@@ -21,7 +21,7 @@ public class NaiveLcpStrategy : ILcpStrategy
     /// <summary>
     /// Standard sequential naive lcp construction.
     /// </summary>
-    public int[] ComputeLcpArray(Span<byte> inputText, Span<int> suffixArray)
+    public int[] ComputeLcpArray(Span<byte> inputText, ArraySegment<int> suffixArray)
     {
         var lcpArray = new int[inputText.Length];
         lcpArray[0] = 0;
@@ -34,7 +34,7 @@ public class NaiveLcpStrategy : ILcpStrategy
         return lcpArray;
     }
 
-    private void LoopBody(ReadOnlySpan<byte> inputText, Span<int> suffixArray, Span<int> lcpArray, int i)
+    private void LoopBody(ReadOnlySpan<byte> inputText, ArraySegment<int> suffixArray, ArraySegment<int> lcpArray, int i)
     {
         var lcpLength = GetLcpLength(inputText.Slice(suffixArray[i - 1]), inputText.Slice(suffixArray[i]));
         lcpArray[i] = lcpLength;

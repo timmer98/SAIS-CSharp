@@ -9,12 +9,10 @@ namespace TextIndexierung.Benchmarks
         {
             var text = File.ReadAllText("..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\loremipsumsmall.txt");
             var textBytes = Encoding.ASCII.GetBytes(text);
-            textBytes = textBytes.Append((byte)0).ToArray();
-            var inputText = textBytes;
             var suffixArrayBuilder = new SuffixArrayBuilder();
             var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
             
-            return (inputText, suffixArray);
+            return (textBytes, suffixArray.ToArray());
         }
     }
 }
