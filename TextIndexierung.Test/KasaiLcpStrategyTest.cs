@@ -42,7 +42,7 @@ namespace TextIndexierung.Test
             var lcp = lcpStrategy.ComputeLcpArray(textBytes, suffixArray);
 
             // Assert
-            lcp.Should().Equal(new NaiveLcpStrategy().ComputeLcpArrayParallel(textBytes, suffixArray));
+            lcp.Should().Equal(new NaiveLcpStrategy().ComputeLcpArrayParallel(textBytes, suffixArray.ToArray()));
         }
     }
 }

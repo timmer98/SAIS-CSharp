@@ -64,7 +64,7 @@ public class SuffixArrayBuilderTest
         var suffixArray = suffixArrayBuilder.BuildSuffixArray(LECTURE_TEST_STRING);
 
         // Assert
-        suffixArray.Should().Equal(12, 11, 0, 8, 5, 2, 10, 1, 9, 6, 3, 7, 4);
+        suffixArray.ToArray().Should().Equal(12, 11, 0, 8, 5, 2, 10, 1, 9, 6, 3, 7, 4);
         var checkResult = SuffixArrayChecker.Check(LECTURE_TEST_STRING, suffixArray, LECTURE_TEST_STRING.Length, true);
         checkResult.Should().BeGreaterThanOrEqualTo(0);
     }
@@ -76,7 +76,7 @@ public class SuffixArrayBuilderTest
 
         var suffixArray = suffixArrayBuilder.BuildSuffixArray(EXAMPLE_STRING);
 
-        suffixArray.Should().Equal(14, 13, 6, 0, 10, 3, 7, 2, 1, 12, 11, 5, 9, 4, 8);
+        suffixArray.ToArray().Should().Equal(14, 13, 6, 0, 10, 3, 7, 2, 1, 12, 11, 5, 9, 4, 8);
     }
 
     [TestMethod]
@@ -90,7 +90,7 @@ public class SuffixArrayBuilderTest
         var sa = builder.BuildSuffixArray(text);
 
         // Assert
-        sa.Should().Equal(14, 13, 0, 6, 11, 4, 2, 8, 1, 7, 10, 12, 5, 3, 9);
+        sa.ToArray().Should().Equal(14, 13, 0, 6, 11, 4, 2, 8, 1, 7, 10, 12, 5, 3, 9);
     }
 
     [TestMethod]

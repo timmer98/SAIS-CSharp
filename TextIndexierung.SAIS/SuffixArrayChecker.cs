@@ -13,7 +13,7 @@ namespace TextIndexierung.SAIS
     /// </summary>
     public class SuffixArrayChecker
     {
-        public static int Check(byte[] T, int[] SA, int n, bool verbose)
+        public static int Check(byte[] T, Span<int> SA, int n, bool verbose)
         {
             var C = new int[256];
             int i, p, q, t;

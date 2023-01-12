@@ -2,6 +2,9 @@
 
 namespace TextIndexierung.SAIS
 {
+    /// <summary>
+    /// Holds the start and end index as well as the current tail and head pointer of a bucket for a character.
+    /// </summary>
     internal class Bucket
     {
         internal int StartIndex;

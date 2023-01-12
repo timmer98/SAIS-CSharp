@@ -1,5 +1,8 @@
 ﻿namespace TextIndexierung.SAIS.Model
 {
+    /// <summary>
+    /// Byte array 
+    /// </summary>
     public class ByteArray : IBaseArray
     {
         private byte[] _array;

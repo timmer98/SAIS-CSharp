@@ -38,7 +38,7 @@ namespace TextIndexierung.Test
             var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
 
             // Act
-            var lcp = lcpStrategy.ComputeLcpArrayParallel(textBytes, suffixArray);
+            var lcp = lcpStrategy.ComputeLcpArrayParallel(textBytes, suffixArray.ToArray());
         }
     }
 }

@@ -5,7 +5,7 @@
     /// </summary>
     public class PhiLinearTimeLcpStrategy : ILcpStrategy
     {
-        public int[] ComputeLcpArray(Span<byte> inputText, int[] suffixArray)
+        public int[] ComputeLcpArray(Span<byte> inputText, Span<int> suffixArray)
         {
             var lcpArray = new int[suffixArray.Length];
             var phiArray = ComputePhiArray(suffixArray);
@@ -33,7 +33,7 @@
             return lcpArray;
         }
 
-        private int[] ComputePhiArray(int[] suffixArray)
+        private int[] ComputePhiArray(Span<int> suffixArray)
         {
             int[] phiArray = new int[suffixArray.Length];
 

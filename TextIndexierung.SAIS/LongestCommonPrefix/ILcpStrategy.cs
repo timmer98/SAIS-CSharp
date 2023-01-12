@@ -2,6 +2,6 @@
 {
     public interface ILcpStrategy
     {
-        public int[] ComputeLcpArray(Span<byte> inputText, int[] suffixArray);
+        public int[] ComputeLcpArray(Span<byte> inputText, Span<int> suffixArray);
     }
 }

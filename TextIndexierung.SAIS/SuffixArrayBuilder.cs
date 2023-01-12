@@ -3,6 +3,10 @@ using TextIndexierung.SAIS.Model;
 
 namespace TextIndexierung.SAIS
 {
+    /// <summary>
+    /// The SuffixArrayBuilder class contains all methods to build the suffix array.
+    /// The algorithm used is the Suffix Array Induced Sorting (SAIS) linear time construction algorithm.
+    /// </summary>
     public class SuffixArrayBuilder
     {
         private MemoryManager memoryManager;
@@ -17,13 +21,37 @@ namespace TextIndexierung.SAIS
             this.memoryManager = memoryManager;
         }
 
-        public int[] BuildSuffixArray(byte[] inputBytes)
+        /// <summary>
+        /// SAIS algorithm to build the suffix array.
+        /// </summary>
+        /// <param name="inputBytes">Byte array of an ASCII encoded input text.</param>
+        /// <returns>Suffix array of <see cref="inputBytes"/></returns>
+        public Span<int> BuildSuffixArray(byte[] inputBytes)
         {
             memoryManager.CheckPeak();
-            return BuildSuffixArray(new ByteArray(inputBytes));
+
+            var sentinelArray = new IntArray(inputBytes.Length + 1);
+
+            for (int i = 0; i < inputBytes.Length; i++)
+            {
+                sentinelArray[i] = inputBytes[i] + 1;
+            }
+
+            sentinelArray[inputBytes.Length] = 0;
+
+            var SA =  BuildSuffixArray(sentinelArray);
+            var suffixArrayWithoutAppendedSentinel = SA.AsSpan(1);
+
+            return suffixArrayWithoutAppendedSentinel;
         }
 
-        public int[] BuildSuffixArray(IBaseArray inputText, int alphabetSize = 256)
+        /// <summary>
+        /// Recursive call to run the SAIS algorithm with the reduced text.
+        /// </summary>
+        /// <param name="inputText">The input text, which could be the initial loaded text or a reduced text.</param>
+        /// <param name="alphabetSize">The number of unique characters in <see cref="inputText"/></param>
+        /// <returns></returns>
+        private int[] BuildSuffixArray(IBaseArray inputText, int alphabetSize = 256)
         {
             var suffixArray = new int[inputText.Length];
             Array.Fill(suffixArray, -1);
@@ -42,12 +70,13 @@ namespace TextIndexierung.SAIS
 
             if (reducedText.Length == newAlphabetSize)
             {
-                // No equal signs -> counting sort;
+                // All signs unique? -> counting sort;
                 reducedSuffixArray = new int[reducedText.Length];
                 for (var i = 1; i < reducedText.Length; i++) reducedSuffixArray[reducedText[i]] = i;
             }
             else
             {
+                // Some signs have the same value? -> Reduce the text further
                 reducedSuffixArray = this.BuildSuffixArray(reducedText, newAlphabetSize);
             }
 
@@ -177,6 +206,11 @@ namespace TextIndexierung.SAIS
                 }
         }
 
+        /// <summary>
+        /// Marks all suffixes as L- or S-Type suffixes. 
+        /// </summary>
+        /// <param name="inputText">Input text as <see cref="IBaseArray"/>. Could be the initial text or a reduced text.</param>
+        /// <returns>Returns a BitArray, where true means L-Type suffix and false means S-Type.</returns>
         internal BitArray MarkSuffixes(IBaseArray inputText)
         {
             var suffixTypes = new BitArray(inputText.Length);
@@ -194,6 +228,12 @@ namespace TextIndexierung.SAIS
             return suffixTypes;
         }
 
+        /// <summary>
+        /// Gets the Buckets for every sign.
+        /// </summary>
+        /// <param name="inputText">Input as IBaseArray. </param>
+        /// <param name="alphabetSize">Number of unique characters in <see cref="inputText"/></param>
+        /// <returns>An array of <see cref="Bucket"/> instances. The bucket for every character can be accessed through the array index.</returns>
         internal Bucket[] GetBuckets(IBaseArray inputText, int alphabetSize = 256)
         {
             var binSizesForChar = GetBinSizes(inputText, alphabetSize);
@@ -232,6 +272,10 @@ namespace TextIndexierung.SAIS
             return binSizesForChar;
         }
 
+        /// <summary>
+        /// Resets head and tail pointers for every bucket.
+        /// </summary>
+        /// <param name="buckets"></param>
         private void ResetBuckets(Bucket[] buckets)
         {
             foreach (var bucket in buckets) bucket.ResetPointers();
