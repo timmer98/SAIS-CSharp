@@ -17,13 +17,6 @@ namespace TextIndexierung.Benchmarks
         }
 
         [Benchmark]
-        public void Parallel()
-        {
-            var lcpStrategy = new KasaiLinearTimeLcpStrategy();
-            lcpStrategy.ComputeLcpArrayParallel(inputText, suffixArray);
-        }
-
-        [Benchmark]
         public void Sequential()
         {
             var lcpStrategy = new KasaiLinearTimeLcpStrategy();
