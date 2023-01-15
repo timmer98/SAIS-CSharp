@@ -7,8 +7,8 @@ namespace TextIndexierung.SAIS
     /// </summary>
     internal class Bucket
     {
-        internal int StartIndex;
-        internal int EndIndex;
+        internal readonly int StartIndex;
+        internal readonly int EndIndex;
         internal int TailPointer;
         internal int HeadPointer;
 
@@ -20,6 +20,9 @@ namespace TextIndexierung.SAIS
             HeadPointer = startIndex;
         }
 
+        /// <summary>
+        /// Resets pointers of the bucket back to start and end.
+        /// </summary>
         public void ResetPointers()
         {
             this.TailPointer = this.EndIndex - 1;

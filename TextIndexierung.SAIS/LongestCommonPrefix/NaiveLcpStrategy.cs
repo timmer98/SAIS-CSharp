@@ -39,6 +39,12 @@ public class NaiveLcpStrategy : ILcpStrategy
         return lcpArray;
     }
 
+    /// <summary>
+    /// Gets length of common prefixes.
+    /// </summary>
+    /// <param name="a">Text span a.</param>
+    /// <param name="b">Text span b to compare with.</param>
+    /// <returns>Length of equal characters in both texts.</returns>
     private int GetLcpLength(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
     {
         var shortestLenght = a.Length < b.Length ? a.Length : b.Length;

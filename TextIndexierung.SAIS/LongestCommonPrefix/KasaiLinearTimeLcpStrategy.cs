@@ -31,6 +31,11 @@ public class KasaiLinearTimeLcpStrategy : ILcpStrategy
         return lcpArray;
     }
 
+    /// <summary>
+    /// Computes the inverse suffix array.
+    /// </summary>
+    /// <param name="suffixArray">Suffix array as Array Segment.</param>
+    /// <returns>Inverse suffix array.</returns>
     private int[] ComputeInverseSuffixArray(ArraySegment<int> suffixArray)
     {
         var inverseSuffixArray = new int[suffixArray.Count];

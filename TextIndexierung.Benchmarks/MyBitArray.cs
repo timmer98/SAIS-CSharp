@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace TextIndexierung.Benchmarks
 {
+    /// <summary>
+    /// Own implementation of a BitArray just to check the performance against the .NET implementation.
+    /// </summary>
     public class MyBitArray
     {
         private readonly byte[] array;
