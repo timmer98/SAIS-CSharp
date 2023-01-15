@@ -16,7 +16,7 @@
             {
                 int j = phiArray[i];
 
-                while (i + l < inputText.Length && j + l < inputText.Length && inputText[i + l] == inputText[j + l])
+                while (j >= 0 && i + l < inputText.Length && j + l < inputText.Length && inputText[i + l] == inputText[j + l])
                 {
                     l++;
                 }
@@ -37,7 +37,7 @@
         {
             int[] phiArray = new int[suffixArray.Count];
 
-            phiArray[^1] = suffixArray[^1];
+            phiArray[suffixArray[0]] = -1;
 
             for (int i = 1; i < suffixArray.Count; i++)
             {

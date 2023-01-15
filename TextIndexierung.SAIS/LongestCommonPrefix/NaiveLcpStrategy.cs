@@ -13,7 +13,11 @@ public class NaiveLcpStrategy : ILcpStrategy
         var lcpArray = new int[inputText.Length];
         lcpArray[0] = 0;
 
-        Parallel.For(1, inputText.Length, (int i) => LoopBody(inputText, suffixArray, lcpArray, i));
+        Parallel.For(1, inputText.Length, (int i) =>
+        {
+            var lcpLength = GetLcpLength(inputText.AsSpan().Slice(suffixArray[i - 1]), inputText.AsSpan().Slice(suffixArray[i]));
+            lcpArray[i] = lcpLength;
+        });
 
         return lcpArray;
     }
@@ -28,23 +32,18 @@ public class NaiveLcpStrategy : ILcpStrategy
 
         for (int i = 1; i < inputText.Length; i++)
         {
-            LoopBody(inputText, suffixArray, lcpArray, i);
+            var lcpLength = GetLcpLength(inputText.Slice(suffixArray[i - 1]), inputText.Slice(suffixArray[i]));
+            lcpArray[i] = lcpLength;
         }
 
         return lcpArray;
     }
 
-    private void LoopBody(ReadOnlySpan<byte> inputText, ArraySegment<int> suffixArray, ArraySegment<int> lcpArray, int i)
-    {
-        var lcpLength = GetLcpLength(inputText.Slice(suffixArray[i - 1]), inputText.Slice(suffixArray[i]));
-        lcpArray[i] = lcpLength;
-    }
-
     private int GetLcpLength(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
     {
-        var shortestLenght = a.Length < b.Length ? b.Length : a.Length;
+        var shortestLenght = a.Length < b.Length ? a.Length : b.Length;
 
-        for (var i = 0; i < a.Length; i++)
+        for (var i = 0; i < shortestLenght; i++)
             if (a[i] != b[i])
                 return i;
 

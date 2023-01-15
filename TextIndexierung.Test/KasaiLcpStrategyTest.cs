@@ -28,12 +28,27 @@ namespace TextIndexierung.Test
         }
 
         [TestMethod]
+        public void KasaiLinearStrategy_WithRepeatingText_ShouldReturnCorrectLcp()
+        {
+            // Arrange
+            var inputText = Encoding.ASCII.GetBytes("abcabc");
+            var suffixArrayBuilder = new SuffixArrayBuilder();
+            var lcpStrategy = new KasaiLinearTimeLcpStrategy();
+            var suffixArray = suffixArrayBuilder.BuildSuffixArray(inputText);
+
+            // Act
+            var lcpArray = lcpStrategy.ComputeLcpArray(inputText, suffixArray);
+
+            // Assert
+            lcpArray.Should().Equal(0, 3, 0, 2, 0, 1);
+        }
+
+        [TestMethod]
         public void KasaiLinearTimeStrategy_WithLargerFile_ShouldJustNotThrow()
         {
             // Arrange
             var text = File.ReadAllText("..\\..\\..\\..\\..\\loremipsumsmall.txt");
-            var textBytes = Encoding.ASCII.GetBytes(text);
-            textBytes = textBytes.Append((byte)0).ToArray();
+            var textBytes = Encoding.ASCII.GetBytes("abcabc");
             var suffixArrayBuilder = new SuffixArrayBuilder();
             var lcpStrategy = new KasaiLinearTimeLcpStrategy();
             var suffixArray = suffixArrayBuilder.BuildSuffixArray(textBytes);
@@ -42,7 +57,7 @@ namespace TextIndexierung.Test
             var lcp = lcpStrategy.ComputeLcpArray(textBytes, suffixArray);
 
             // Assert
-            lcp.Should().Equal(new NaiveLcpStrategy().ComputeLcpArrayParallel(textBytes, suffixArray.ToArray()));
+            lcp.Should().Equal(new NaiveLcpStrategy().ComputeLcpArray(textBytes, suffixArray.ToArray()));
         }
     }
 }

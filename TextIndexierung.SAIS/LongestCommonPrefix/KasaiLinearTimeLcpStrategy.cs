@@ -8,7 +8,7 @@ public class KasaiLinearTimeLcpStrategy : ILcpStrategy
     public int[] ComputeLcpArray(Span<byte> inputText, ArraySegment<int> suffixArray)
     {
         var lcpArray = new int[suffixArray.Count];
-        var inverseSuffixArray = ComputeInverseLcp(suffixArray);
+        var inverseSuffixArray = ComputeInverseSuffixArray(suffixArray);
 
         var l = 0;
         lcpArray[0] = 0;
@@ -18,7 +18,7 @@ public class KasaiLinearTimeLcpStrategy : ILcpStrategy
             if (inverseSuffixArray[i] != 0)
             {
                 var j = suffixArray[inverseSuffixArray[i] - 1];
-                while (inputText[i + l] == inputText[j + l])
+                while (i + l < inputText.Length && j + l < inputText.Length && inputText[i + l] == inputText[j + l])
                 {
                     l++;
                 }
@@ -31,7 +31,7 @@ public class KasaiLinearTimeLcpStrategy : ILcpStrategy
         return lcpArray;
     }
 
-    private int[] ComputeInverseLcp(ArraySegment<int> suffixArray)
+    private int[] ComputeInverseSuffixArray(ArraySegment<int> suffixArray)
     {
         var inverseSuffixArray = new int[suffixArray.Count];
 

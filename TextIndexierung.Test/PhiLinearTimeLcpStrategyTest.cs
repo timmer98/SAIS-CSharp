@@ -24,7 +24,7 @@ namespace TextIndexierung.Test
             var lcpArray = lcpStrategy.ComputeLcpArray(inputText, suffixArray);
 
             // Assert
-            TestHelper.AssertLectureLcpArray(lcpArray);
+            lcpArray.Should().Equal(new NaiveLcpStrategy().ComputeLcpArrayParallel(inputText, suffixArray));
         }
 
         [TestMethod]
@@ -43,9 +43,25 @@ namespace TextIndexierung.Test
             var lcp = lcpStrategy.ComputeLcpArray(textBytes, suffixArray);
 
             // Assert
-            var naiveLcp = naiveStrategy.ComputeLcpArrayParallel(textBytes, suffixArray.ToArray());
+            var naiveLcp = naiveStrategy.ComputeLcpArrayParallel(textBytes, suffixArray);
 
             lcp.Should().Equal(naiveLcp);
+        }
+
+        [TestMethod]
+        public void PhiLinearStrategy_WithRepeatingText_ShouldReturnCorrectLcp()
+        {
+            // Arrange
+            var inputText = Encoding.ASCII.GetBytes("abcabc");
+            var suffixArrayBuilder = new SuffixArrayBuilder();
+            var lcpStrategy = new PhiLinearTimeLcpStrategy();
+            var suffixArray = suffixArrayBuilder.BuildSuffixArray(inputText);
+
+            // Act
+            var lcpArray = lcpStrategy.ComputeLcpArray(inputText, suffixArray);
+
+            // Assert
+            lcpArray.Should().Equal(0, 3, 0, 2, 0, 1);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TextIndexierung.SAIS;
 using TextIndexierung.SAIS.LongestCommonPrefix;
@@ -24,6 +25,24 @@ namespace TextIndexierung.Test
 
             // Assert
             TestHelper.AssertLectureLcpArray(lcpArray);
+        }
+
+        [TestMethod]
+        public void NaiveLcpStrategy_WithRepeatedText_ShouldReturnCorrectLcp()
+        {
+            // Arrange
+            var inputText = Encoding.ASCII.GetBytes("abcabc");
+            var suffixArrayBuilder = new SuffixArrayBuilder();
+            var naiveStrategy = new NaiveLcpStrategy();
+            var suffixArray = suffixArrayBuilder.BuildSuffixArray(inputText);
+
+            // Act
+            var lcpArray = naiveStrategy.ComputeLcpArray(inputText, suffixArray);
+            var lcpParallel = naiveStrategy.ComputeLcpArrayParallel(inputText, suffixArray);
+
+            // Assert
+            lcpParallel.Should().Equal(lcpArray);
+            lcpArray.Should().Equal(0, 3, 0, 2, 0, 1);
         }
 
         [TestMethod]
