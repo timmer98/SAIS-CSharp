@@ -46,4 +46,11 @@ The solution uses the .NET 6.0 framework. To compile and run it on Ubuntu 20.04 
 For troubleshooting, other ways of installation (e.g. Snap or scripted install) as well as other plattforms check the [installation overview](https://learn.microsoft.com/en-us/dotnet/core/install/linux) of the .NET documentation.
 
 ## Compile and Run
+For compiling simply run the following command from the .NET SDK:
+
+```
+dotnet build -o bin
+```
+
+The option ```-o``` is used to specify the output directory, in this case "bin".
 
