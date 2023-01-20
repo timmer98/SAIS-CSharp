@@ -27,7 +27,9 @@ namespace TextIndexierung.SAIS
             }
 
             /* Check arguments. */
+#pragma warning disable CS8625
             if ((T == null) || (SA == null) || (n < 0))
+#pragma warning restore CS8625
             {
                 if (verbose) System.Console.WriteLine("Invalid arguments.");
                 return -1;
