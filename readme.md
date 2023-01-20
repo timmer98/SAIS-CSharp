@@ -1,28 +1,3 @@
-Current Result:
-
-```
-RESULT name="Name" sa_construction_time=13161 ms 
-sa_construction_memory=1089,02 lcp_naive_construction_time=14892 
-lcp_kasai_construction_time=2374 
-lcp_phi_construction_time=1698
-```
-
-After implementing IBaseArray interface:
-
-```
-RESULT name="Name" sa_construction_time=17994 ms 
-sa_construction_memory=879,31 
-lcp_naive_construction_time=14998 
-lcp_kasai_construction_time=2480 
-lcp_phi_construction_time=1720
-```
-
-English 100MB Text:
-libsais: 14s
-this implementation: 36,6s
-my c implementation: 42s
-
-
 # Compiling the Project
 ## Installing the SDK
 The solution uses the .NET 6.0 framework. To compile and run it on Ubuntu 20.04 LTS the framework has to be installed first. This can be done in two steps as explained in the [.NET documentation](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#2004).:
