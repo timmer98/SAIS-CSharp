@@ -2,7 +2,7 @@
   "profiles": {
     "TextIndexierung.Console": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Lukas\\Documents\\Karriere\\Masterstudium\\1. Semester\\Text Indexierung\\Projekt\\english.100MB.txt\""
+      "commandLineArgs": "\"C:\\bwSyncNShare\\Karriere\\Masterstudium\\1. Semester\\Text Indexierung\\Projekt\\lorem\""
     }
   }
 }
