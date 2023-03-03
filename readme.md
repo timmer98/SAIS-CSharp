@@ -1,5 +1,12 @@
-# 1. Compiling the Project
-## 1.1 Installing the SDK
+# Suffix Array and LCP Consruction Algorithm
+## Suffix Array Induced Sorting
+The suffix array induced sorting algorithm is a linear time suffix array construction algorithm by Yuta Mori. This project is for learning purposes only and not at all optimized for performance. For production use the highly optimized [libsais](https://github.com/IlyaGrebnov/libsais) library by Ilya Grebnov should be used. Benchmarks showed that libsais is around 6 times faster and uses less memory.
+
+## Longest Common Prefix
+This project also contains implementations of two non trivial LCP construction algorithms - one using the inverse suffix array (KasaiLinearTimeLcpStrategy - [Kasai Algorithm](http://dx.doi.org/10.1007/3-540-48194-X_17)) and another (slighty faster) building a permuted lcp array (PhiLinearTimeLcpArray). 
+
+# Compiling the Project
+## 1. Installing the SDK
 The solution uses the .NET 6.0 framework. To compile and run it on Ubuntu 20.04 LTS the framework has to be installed first. This can be done in two steps as explained in the [.NET documentation](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#2004).:
 
 1. Add the Microsoft package signing key to your list of trusted keys and add the package repository. To do that run the following commands.
@@ -20,7 +27,7 @@ The solution uses the .NET 6.0 framework. To compile and run it on Ubuntu 20.04 
 
 For troubleshooting, other ways of installation (e.g. Snap or scripted install) as well as other plattforms check the [installation overview](https://learn.microsoft.com/en-us/dotnet/core/install/linux) of the .NET documentation.
 
-## 1.2 Compile
+## 2. Compile
 For compiling simply run the following command from the .NET SDK:
 
 ```
@@ -29,5 +36,5 @@ dotnet build -o bin
 
 The option ```-o``` is used to specify the output directory, in this case "bin".
 
-## 1.3 Run
+## 3. Run
 To run the project navigate to the output folder (e.g. "bin") and run the file ```TextIndexierung.Console```. For help with the parameters run ```TextIndexierung.Console --help```.
