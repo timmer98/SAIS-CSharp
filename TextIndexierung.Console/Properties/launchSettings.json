@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "TextIndexierung.Console": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\bwSyncNShare\\Karriere\\Masterstudium\\1. Semester\\Text Indexierung\\Projekt\\lorem\""
-    }
-  }
-}

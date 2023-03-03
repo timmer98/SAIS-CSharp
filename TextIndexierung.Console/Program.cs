@@ -26,7 +26,7 @@ internal class Program
 
         var textBytes = ReadText(options);
 
-        MeasurementRunner.MeasureAlgorithms(textBytes, options);
+        Runner.MeasureAlgorithms(textBytes, options);
     }
 
     /// <summary>
